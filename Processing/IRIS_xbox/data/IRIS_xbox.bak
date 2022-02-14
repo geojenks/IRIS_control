@@ -1,0 +1,3 @@
+IRIS controller
+radialPos	control the radial position on the IRIS	3	SLIDER	Z Axis	0	1.0	0.0
+fingerTilt	control the tile of the fingers of the IRIS	3	SLIDER	Y Rotation	0	1.0	0.0
