@@ -35,6 +35,7 @@ states state = NONE;
 float currentValue;
 int decimal = 0;
 
+/*
 #include <Rotary.h>
 volatile long rot, last_rot, temp_rot = 0;
 // Rotary encoder is wired with the common to ground and the two
@@ -43,6 +44,7 @@ Rotary rotary = Rotary(2, 3);
 
 // Counter that will be incremented or decremented by rotation.
 int counter = 0;
+*/
 
 void setup() 
 {
@@ -51,6 +53,8 @@ void setup()
   stepper2.setMaxSpeed(1800);
   stepper1.setSpeed(0);
   stepper1.runSpeed();
+  stepper2.setSpeed(0);
+  stepper2.runSpeed();
   pinMode(stepPin, OUTPUT);
   pinMode(dirPin, OUTPUT);
   
@@ -60,20 +64,23 @@ void setup()
   //Serial.setTimeout(10);
   establishContact();  // send a byte to establish contact until receiver responds 
   state = NONE;
-
+/*
   //Z rising pulse from encoder activated ai2().
   pinMode(4, INPUT_PULLUP); // internal pullup input pin 4
   attachInterrupt(2, rotate, CHANGE);
   attachInterrupt(3, rotate, CHANGE);
   attachInterrupt(4, ai2, RISING);
+*/
 }
 
 void loop (){
   // motor control with gamepad:
   stepper1.runSpeed();
+  stepper2.runSpeed();
   if (Serial.available() > 12){
     while (Serial.available ()){
       stepper1.runSpeed();
+      stepper2.runSpeed();
       //Serial.print(counter);
       byte incoming = Serial.read();
       if (incoming == '<'){
@@ -102,6 +109,7 @@ void loop (){
     //}
   }
   */
+  /*
   if( rot != temp_rot ){
       Serial.print("rot = ");
       Serial.print (rot);
@@ -112,6 +120,7 @@ void loop (){
       Serial.print(last_rot);
       last_rot = counter;
     }
+    */
   //delay(50);
 }  // end of loop
 
@@ -237,7 +246,7 @@ void processRadius (float value)//const unsigned int value)
   else {
     digitalWrite(dirPin, LOW);
   }
-  Serial.print ("Radius = ");
+  Serial.print ("Radius_v = ");
   Serial.print ((((int)value-90)/abs((int)value-90)) // get the +/- sign
       *((int)value-90)*((int)value-90)/2);
   if (abs((int) value - 90) < 5){
@@ -279,10 +288,15 @@ void processAngle (float value)//const unsigned int value)
     //digitalWrite(stepPin, HIGH);
   }
   */
-  Serial.print (", Angle = ");
-  Serial.println  (value-90);
-  stepper2.setSpeed((int)value-90);
-  stepper2.runSpeed();
+  Serial.print (", Angle_v = ");
+  Serial.print (value-90);
+  Serial.print (", Radius_p = ");
+  Serial.print(stepper1.currentPosition())
+  Serial.print (", Angle_p = ");
+  Serial.println(stepper2.currentPosition())
+  
+  stepper2.setSpeed(10*((int)value-90));
+  //stepper2.runSpeed();
   
 } // end of processSpeed
 
