@@ -5,13 +5,14 @@ Created on Wed Feb 16 11:38:17 2022
 @author: George
 """
 
-import threading as thread
+#import threading as thread
+from multiprocessing import Process
 
-import serial, time, subprocess
+import serial, time, subprocess, sys
 from datetime import datetime
 
 start = datetime.now()
-stamp = start.strftime(" %Y-%m-%d %H %M %S")
+stamp = start.strftime("%Y-%m-%d_%H%M%S")
 
 global finish
 finish = 0
@@ -26,9 +27,9 @@ def process_finish():
 
 def monitor():
     print("Start Serial Monitor")
-    COMPORT = "COM5"
+    COMPORT = "COM10"
     BAUDRATE = 9600
-    ser = serial.Serial(COMPORT, BAUDRATE)
+    ser = serial.Serial(COMPORT, BAUDRATE, timeout = None)
     #time.sleep(2)
     ser.read_all()
     while (1):
@@ -49,17 +50,18 @@ def monitor():
             csv_file.close()
         if finish:
             ser.close()
+            print("Stop Monitoring")
             break
-
-        # do some other things here
-
-    print("Stop Monitoring")
-
 
 # run the script from linux bash
 
 def axia_log():
-    starttime = time.time() * 1000
+    test = subprocess.Popen(["bash", "-c", 'watch -n 0.01 ./bash_script.sh "{0}"'.format('axia_data' + stamp + '.csv')], stdout=subprocess.PIPE)
+    #starttime = time.time() * 1000
+    while(1):
+        if finish:
+            break
+        '''
     with open('axia_data' + stamp + '.csv', 'a') as file:
         print("writing headers")
         file.write('Status' + ', ')
@@ -72,9 +74,16 @@ def axia_log():
         file.write('Time' + '\n')
         x=0
         while(1):
-            test = subprocess.Popen(["./netft","192.168.1.2"], stdout=subprocess.PIPE)
+            #if hasattr(sys, 'getwindowsversion'):
+            #    test = subprocess.Popen(["bash", "-c", './netft 192.168.1.2'], stdout=subprocess.PIPE)
+            #else:
+            #    test = subprocess.Popen(["./netft", "192.168.1.2"], stdout=subprocess.PIPE)
+            test = subprocess.Popen(["bash", "-c", "'watch -n 0.01 ./netft 192.168.1.2'"], stdout=subprocess.PIPE)
+            if finish:
+                break
             output = test.communicate()
-            new = "".join(output[:-1])
+            new = output[0].decode("utf-8") 
+            #new = "".join(output[:-1])
             l_new = new.split('\n')
             for d in l_new[:-1]:
                 parts = d.split(':')
@@ -83,19 +92,24 @@ def axia_log():
             x+=1
             if finish:
                 break
+            '''
 
 
 if __name__ == "__main__":
     threads = [];
-    a = thread.Thread(target=monitor, args=())
+    a = Process(target=monitor, args=())
+    #a = thread.Thread(target=monitor, args=())
     threads.append(a)
-    b = thread.Thread(target=axia_log, args=())
+    b = Process(target=axia_log, args=())
+    #b = thread.Thread(target=axia_log, args=())
     threads.append(b)
-    c = thread.Thread(target=process_finish, args=())
-    threads.append(c)
+    #c = thread.Thread(target=process_finish, args=())
+    # does not work in multiprocessing
+    #c = Process(target=process_finish, args=())
+    #threads.append(c)
     a.start()
     b.start()
-    c.start()
+    #c.start()
     a.join()
     b.join()
-    c.join()
+    #c.join()

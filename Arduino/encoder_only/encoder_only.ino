@@ -65,9 +65,11 @@ void ai2() {
   unsigned char result = rotary.process();
   if (result == DIR_CW) {
     //counter++;
+    counter=counter+100000;
     rot ++;}
   else {
     //counter--;
+    counter=counter-100000;
     rot --;}
     //Serial.println(counter); 
 }

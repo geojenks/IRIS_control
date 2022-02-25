@@ -8,7 +8,7 @@ import sys, os, serial, threading, time
 from datetime import datetime
 
 start = datetime.now()
-stamp = start.strftime(" %Y-%m-%d %H %M %S")
+stamp = start.strftime("%Y-%m-%d_%H%M%S")
 
 def monitor():
     ser = serial.Serial(COMPORT, BAUDRATE)
@@ -41,7 +41,7 @@ MAIN APPLICATION
 
 print("Start Serial Monitor")
 
-COMPORT = "COM5"
+COMPORT = "COM10"
 BAUDRATE = 9600
 
 monitor()

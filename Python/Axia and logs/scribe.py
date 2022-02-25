@@ -7,6 +7,7 @@ Created on Tue Feb 15 15:54:17 2022
 #import os
 import time
 import subprocess
+import sys
 from datetime import datetime
 
 # run the script from linux bash
@@ -18,6 +19,10 @@ starttime = time.time() * 1000
 stream = os.popen('./netft 192.168.1.2')
 output = stream.read()
 print(output)
+'''
+
+test = subprocess.Popen(["bash", "-c", 'watch -n 0.01 ./bash_script.sh'], stdout=subprocess.PIPE)
+time.sleep(10)
 '''
 start = datetime.now()
 stamp = start.strftime(" %Y-%m-%d %H %M %S")
@@ -33,16 +38,22 @@ with open('data' + stamp + '.csv', 'a') as file:
     file.write('Time' + '\n')
     x=0
     while(x<100):
-        test = subprocess.Popen(["./netft","192.168.1.2"], stdout=subprocess.PIPE)
+        if hasattr(sys, 'getwindowsversion'):
+            print("windows")
+            test = subprocess.Popen(["bash", "-c", "'watch -n 0.01 ./netft 192.168.1.2'"], stdout=subprocess.PIPE)
+        else:
+            test = subprocess.Popen(["./netft", "192.168.1.2"], stdout=subprocess.PIPE)
         output = test.communicate()
-        new = "".join(output[:-1])
+        #print(output)
+        new = output[0].decode("utf-8") 
+        #new = "".join(output[:-1])
         l_new = new.split('\n')
         for d in l_new[:-1]:
             parts = d.split(':')
             file.write(parts[1]+",")
         file.write('{0}\n'.format(time.time() * 1000 - starttime))
         x+=1
-
+'''
 
 
 #os.system("echo \"{0}\" >> data.csv".format(time.time() * 1000 - starttime))
