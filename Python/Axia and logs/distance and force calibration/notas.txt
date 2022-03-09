@@ -1,0 +1,2 @@
+bottom of base at 96, pause at 71, end (not min) at 37
+distance is to outer side of base of finger

@@ -1,0 +1,2 @@
+It goes from large radius (y=5) to small radius (y=70) starting at the top and going to the bottom.
+First column is all the data, second column is the "squeeze" pass, third column is the "release" pass.
